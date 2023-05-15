@@ -32,7 +32,7 @@ func main() {
 
 	input := tview.NewInputField()
 	input.
-		SetLabel("#cheapgpt ").
+		SetLabel("[#new-chat] ").
 		SetLabelColor(tcell.ColorWhite).
 		SetFieldBackgroundColor(tcell.ColorBlack)
 
