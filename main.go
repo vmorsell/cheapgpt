@@ -30,8 +30,11 @@ func main() {
 	chat := tview.NewTextView()
 	chat.SetBorder(true)
 
-	input := tview.NewInputField().
-		SetLabel("#cheapgpt ")
+	input := tview.NewInputField()
+	input.
+		SetLabel("#cheapgpt ").
+		SetLabelColor(tcell.ColorWhite).
+		SetFieldBackgroundColor(tcell.ColorBlack)
 
 	sendLock := false
 
