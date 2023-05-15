@@ -28,7 +28,7 @@ func main() {
 	app := tview.NewApplication()
 
 	chat := tview.NewTextView()
-	chat.SetBorder(true)
+	chat.SetDynamicColors(true)
 
 	input := tview.NewInputField()
 	input.
@@ -51,7 +51,7 @@ func main() {
 
 		sendLock = true
 
-		fmt.Fprint(chat, fmtChatMessage(userName, message))
+		fmt.Fprint(chat, fmtChatMessage(fmt.Sprintf("[yellow]%s[white]", userName), message))
 		input.SetText("")
 		messages = append(messages, gpt.Message{
 			Role:    gpt.RoleUser,
