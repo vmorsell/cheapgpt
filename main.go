@@ -31,7 +31,7 @@ func main() {
 	chatView.SetDynamicColors(true)
 
 	infoBar := tview.NewTextView()
-	infoBar.SetBackgroundColor(tcell.ColorBlue)
+	infoBar.SetBackgroundColor(tcell.ColorDarkBlue)
 	fmt.Fprint(infoBar, "GPT-3.5")
 
 	input := tview.NewInputField()
