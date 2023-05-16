@@ -29,7 +29,7 @@ type Config struct {
 }
 
 func main() {
-	configStore := configstore.MustNewConfigStore().WithAppName(cheapgpt)
+	configStore := configstore.Must(configstore.New(cheapgpt))
 
 	config := Config{}
 	if err := configStore.Get(&config); err != nil {
