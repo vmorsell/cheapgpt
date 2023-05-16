@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/gdamore/tcell/v2"
@@ -122,6 +123,7 @@ func main() {
 			fmt.Fprint(chatView, fmtChatMessage(assistantName, ""))
 			app.Draw()
 
+			tokens := []string{}
 			for {
 				event, ok := <-events
 				if !ok {
@@ -134,9 +136,17 @@ func main() {
 					// We may get events with no content. Eliminate this?
 					continue
 				}
-				fmt.Fprintf(chatView, "%s", *event.Choices[0].Delta.Content)
+				token := *event.Choices[0].Delta.Content
+				fmt.Fprintf(chatView, "%s", token)
+				tokens = append(tokens, token)
+
 				app.Draw()
 			}
+
+			chat.Messages = append(chat.Messages, gpt.Message{
+				Role:    gpt.RoleAssistant,
+				Content: strings.Join(tokens, ""),
+			})
 			sendLock = false
 		}
 	}()
