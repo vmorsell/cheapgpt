@@ -5,6 +5,7 @@ go 1.20
 require (
 	github.com/gdamore/tcell/v2 v2.6.0
 	github.com/rivo/tview v0.0.0-20230511053024-822bd067b165
+	github.com/vmorsell/config-store v0.0.2
 	github.com/vmorsell/openai-gpt-sdk-go v0.0.2
 )
 

@@ -6,14 +6,14 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	configstore "github.com/vmorsell/config-store"
 	"github.com/vmorsell/openai-gpt-sdk-go/gpt"
 )
 
 const (
-	apiKey = ""
-
 	userName        = "user"
 	assistantName   = "CheapGPT"
+	cheapgpt        = "cheapgpt"
 	systemMessage   = "You are ChatGPT's cousin CheapGPT. You are just as good, but way less expensive."
 	defaultChatName = "new-chat"
 )
@@ -21,9 +21,20 @@ const (
 type Chat struct {
 	Name     *string
 	Messages []gpt.Message
-	}
+}
+
+type Config struct {
+	APIKey string `json:"api_key"`
+}
 
 func main() {
+	configStore := configstore.MustNewConfigStore().WithAppName(cheapgpt)
+
+	config := Config{}
+	if err := configStore.Get(&config); err != nil {
+		panic(err)
+	}
+
 	chat := Chat{}
 	app := tview.NewApplication()
 
@@ -70,7 +81,7 @@ func main() {
 		AddItem(infoBar, 1, 0, 1, 1, 0, 0, false).
 		AddItem(input, 2, 0, 1, 1, 0, 0, true)
 
-	client := gpt.NewClient(gpt.NewConfig().WithAPIKey(apiKey))
+	client := gpt.NewClient(gpt.NewConfig().WithAPIKey(config.APIKey))
 	fmt.Println(client)
 
 	go func() {
