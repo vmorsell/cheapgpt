@@ -6,7 +6,7 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
-	configstore "github.com/vmorsell/config-store"
+	"github.com/vmorsell/configstore"
 	"github.com/vmorsell/openai-gpt-sdk-go/gpt"
 )
 
