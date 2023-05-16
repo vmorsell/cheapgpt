@@ -35,7 +35,14 @@ func main() {
 		panic(err)
 	}
 
-	chat := Chat{}
+	chat := Chat{
+		Messages: []gpt.Message{
+			{
+				Role:    gpt.RoleSystem,
+				Content: systemMessage,
+			},
+		},
+	}
 	app := tview.NewApplication()
 
 	chatView := tview.NewTextView()
