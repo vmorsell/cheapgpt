@@ -14,7 +14,7 @@ import (
 const (
 	userName        = "user"
 	assistantName   = "CheapGPT"
-	model           = gpt.GPT35Turbo
+	model           = gpt.GPT4
 	cheapgpt        = "cheapgpt"
 	defaultChatName = "new-chat"
 )
@@ -43,7 +43,7 @@ func main() {
 	chat := Chat{
 		Messages: []gpt.Message{
 			{
-				Role:    gpt.RoleSystem,
+				Role:    gpt.System,
 				Content: systemMessage,
 			},
 		},
@@ -81,7 +81,7 @@ func main() {
 		fmt.Fprint(chatView, fmtChatMessage(fmt.Sprintf("[yellow]%s[white]", userName), message))
 		input.SetText("")
 		chat.Messages = append(chat.Messages, gpt.Message{
-			Role:    gpt.RoleUser,
+			Role:    gpt.User,
 			Content: message,
 		})
 		updateCh <- struct{}{}
@@ -148,7 +148,7 @@ func main() {
 			}
 
 			chat.Messages = append(chat.Messages, gpt.Message{
-				Role:    gpt.RoleAssistant,
+				Role:    gpt.Assistant,
 				Content: strings.Join(tokens, ""),
 			})
 			sendLock = false
@@ -160,15 +160,15 @@ func main() {
 	}
 }
 
-func chatName(client gpt.Client, message string) (string, error) {
+func chatName(client *gpt.Client, message string) (string, error) {
 	res, err := client.ChatCompletion(gpt.ChatCompletionInput{
 		Messages: []gpt.Message{
 			{
-				Role:    gpt.RoleSystem,
+				Role:    gpt.System,
 				Content: "You are a title generator. You generate names on the format foo-bar-baz. The titles have maximum three words, all lowercase, and the words are separated by dashes. No spaces are allowed. You always reply with only the word, nothing else.",
 			},
 			{
-				Role:    gpt.RoleUser,
+				Role:    gpt.User,
 				Content: fmt.Sprintf("Can you suggest a title for a chat that started with this message?\n\n%s", message),
 			},
 		},
