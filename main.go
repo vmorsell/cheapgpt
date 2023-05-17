@@ -16,8 +16,11 @@ const (
 	assistantName   = "CheapGPT"
 	model           = gpt.GPT35Turbo
 	cheapgpt        = "cheapgpt"
-	systemMessage   = "You are ChatGPT's cousin CheapGPT. You are just as good, but way less expensive."
 	defaultChatName = "new-chat"
+)
+
+var (
+	systemMessage = fmt.Sprintf(`You are %s, ChatGPT's cousin. You are just as good, but way less expensive.`, assistantName)
 )
 
 type Chat struct {
