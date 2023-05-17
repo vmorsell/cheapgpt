@@ -1,7 +1,7 @@
 OUT_NAME := cheapgpt
 BUILD_DEPS := $(shell find . -type f -not -name $(OUT_NAME))
 
-all: build install
+all: build
 
 build: $(OUT_NAME)
 
