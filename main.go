@@ -14,6 +14,7 @@ import (
 const (
 	userName        = "user"
 	assistantName   = "CheapGPT"
+	model           = gpt.GPT35Turbo
 	cheapgpt        = "cheapgpt"
 	systemMessage   = "You are ChatGPT's cousin CheapGPT. You are just as good, but way less expensive."
 	defaultChatName = "new-chat"
@@ -51,7 +52,7 @@ func main() {
 
 	infoBar := tview.NewTextView()
 	infoBar.SetBackgroundColor(tcell.ColorDarkBlue)
-	fmt.Fprint(infoBar, "GPT-3.5")
+	fmt.Fprint(infoBar, model)
 
 	input := tview.NewInputField()
 	input.
@@ -108,7 +109,7 @@ func main() {
 			}
 
 			in := gpt.ChatCompletionInput{
-				Model:    gpt.GPT35Turbo,
+				Model:    model,
 				Messages: chat.Messages,
 				Stream:   true,
 			}
