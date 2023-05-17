@@ -34,9 +34,8 @@ func main() {
 	chatView := tview.NewTextView()
 	chatView.SetDynamicColors(true)
 
-	infoBar := tview.NewTextView()
-	infoBar.SetBackgroundColor(tcell.ColorDarkBlue)
-	fmt.Fprint(infoBar, "gpt")
+	statusBar := tview.NewTextView()
+	statusBar.SetBackgroundColor(tcell.ColorDarkBlue)
 
 	input := tview.NewInputField()
 	input.
@@ -65,7 +64,7 @@ func main() {
 	grid := tview.NewGrid().
 		SetRows(0, 1, 1).
 		AddItem(chatView, 0, 0, 1, 1, 0, 0, false).
-		AddItem(infoBar, 1, 0, 1, 1, 0, 0, false).
+		AddItem(statusBar, 1, 0, 1, 1, 0, 0, false).
 		AddItem(input, 2, 0, 1, 1, 0, 0, true)
 
 	// Accept messages to the chat.
