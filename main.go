@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/gdamore/tcell/v2"
@@ -12,21 +11,9 @@ import (
 )
 
 const (
-	userName        = "user"
-	assistantName   = "CheapGPT"
-	model           = gpt.GPT4
 	cheapgpt        = "cheapgpt"
 	defaultChatName = "new-chat"
 )
-
-var (
-	systemMessage = fmt.Sprintf(`You are %s, ChatGPT's cousin. You are just as good, but way less expensive.`, assistantName)
-)
-
-type Chat struct {
-	Name     *string
-	Messages []gpt.Message
-}
 
 type Config struct {
 	APIKey string `json:"api_key"`
@@ -40,14 +27,8 @@ func main() {
 		panic(err)
 	}
 
-	chat := Chat{
-		Messages: []gpt.Message{
-			{
-				Role:    gpt.System,
-				Content: systemMessage,
-			},
-		},
-	}
+	client := gpt.NewClient(gpt.NewConfig().WithAPIKey(config.APIKey))
+
 	app := tview.NewApplication()
 
 	chatView := tview.NewTextView()
@@ -55,7 +36,7 @@ func main() {
 
 	infoBar := tview.NewTextView()
 	infoBar.SetBackgroundColor(tcell.ColorDarkBlue)
-	fmt.Fprint(infoBar, model)
+	fmt.Fprint(infoBar, "gpt")
 
 	input := tview.NewInputField()
 	input.
@@ -63,28 +44,22 @@ func main() {
 		SetLabelColor(tcell.ColorWhite).
 		SetFieldBackgroundColor(tcell.ColorBlack)
 
-	sendLock := false
+	// Register chat.
+	chat := NewChat(app, chatView)
 
-	updateCh := make(chan struct{})
 	input.SetDoneFunc(func(_ tcell.Key) {
-		if sendLock {
+		content := input.GetText()
+		if content == "" {
 			return
 		}
 
-		message := input.GetText()
-		if message == "" {
-			return
-		}
-
-		sendLock = true
-
-		fmt.Fprint(chatView, fmtChatMessage(fmt.Sprintf("[yellow]%s[white]", userName), message))
 		input.SetText("")
-		chat.Messages = append(chat.Messages, gpt.Message{
-			Role:    gpt.User,
-			Content: message,
-		})
-		updateCh <- struct{}{}
+
+		msg := Message{
+			From:    "user",
+			Content: content,
+		}
+		chat.In <- msg
 	})
 
 	grid := tview.NewGrid().
@@ -93,67 +68,12 @@ func main() {
 		AddItem(infoBar, 1, 0, 1, 1, 0, 0, false).
 		AddItem(input, 2, 0, 1, 1, 0, 0, true)
 
-	client := gpt.NewClient(gpt.NewConfig().WithAPIKey(config.APIKey))
-	fmt.Println(client)
+	// Accept messages to the chat.
+	go chat.AcceptMessages()
 
-	go func() {
-		for {
-			<-updateCh
-
-			if chat.Name == nil {
-				go func() {
-					name, err := chatName(client, chat.Messages[len(chat.Messages)-1].Content)
-					if err != nil {
-						panic(fmt.Sprintf("chat name: %v", err))
-					}
-					chat.Name = &name
-					input.SetLabel(fmt.Sprintf("%s ", fmtChatName(name)))
-				}()
-			}
-
-			in := gpt.ChatCompletionInput{
-				Model:    model,
-				Messages: chat.Messages,
-				Stream:   true,
-			}
-			events := make(chan *gpt.ChatCompletionChunkEvent)
-			go func() {
-				err := client.ChatCompletionStream(in, events)
-				if err != nil {
-					panic(err)
-				}
-			}()
-
-			fmt.Fprint(chatView, fmtChatMessage(assistantName, ""))
-			app.Draw()
-
-			tokens := []string{}
-			for {
-				event, ok := <-events
-				if !ok {
-					break
-				}
-				if event.Choices == nil {
-					panic("no choices")
-				}
-				if event.Choices[0].Delta.Content == nil {
-					// We may get events with no content. Eliminate this?
-					continue
-				}
-				token := *event.Choices[0].Delta.Content
-				fmt.Fprintf(chatView, "%s", token)
-				tokens = append(tokens, token)
-
-				app.Draw()
-			}
-
-			chat.Messages = append(chat.Messages, gpt.Message{
-				Role:    gpt.Assistant,
-				Content: strings.Join(tokens, ""),
-			})
-			sendLock = false
-		}
-	}()
+	// Start agents.
+	go chat.AddAgent(NewAgent(client, &chat.Messages, chat.In, "dennis", "You are polite but you get highly annoyed when someone is telling jokes. You hate jokes!", 0.6))
+	go chat.AddAgent(NewAgent(client, &chat.Messages, chat.In, "albin", "You constantly tell jokes and ask people about if they have heard anything about any launch codes.", 0.2))
 
 	if err := app.SetRoot(grid, true).SetFocus(grid).Run(); err != nil {
 		panic(err)
