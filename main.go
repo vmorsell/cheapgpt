@@ -32,7 +32,9 @@ func main() {
 	app := tview.NewApplication()
 
 	chatView := tview.NewTextView()
-	chatView.SetDynamicColors(true)
+	chatView.SetDynamicColors(true).
+		SetWrap(true).
+		SetWordWrap(true)
 
 	statusBar := tview.NewTextView()
 	statusBar.SetBackgroundColor(tcell.ColorDarkBlue)
