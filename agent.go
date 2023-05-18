@@ -72,6 +72,7 @@ func (a *Agent) ListenAndReply() error {
 			content = content[len(a.Name)+2:]
 		}
 		msg := Message{
+			Time:    time.Now(),
 			From:    a.Name,
 			Content: content,
 		}

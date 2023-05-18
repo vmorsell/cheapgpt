@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/rivo/tview"
 )
@@ -15,6 +16,7 @@ type Chat struct {
 }
 
 type Message struct {
+	Time    time.Time
 	From    string
 	Content string
 }
@@ -38,7 +40,9 @@ func (c *Chat) PrintMessage(msg Message) {
 		from = fmt.Sprintf("[yellow]%s[white]", from)
 	}
 
-	fmt.Fprint(c.ChatView, fmtChatMessage(from, msg.Content))
+	t := msg.Time.Format("15:04")
+	line := fmt.Sprintf("%s <%s> %s\n", t, from, msg.Content)
+	fmt.Fprint(c.ChatView, line)
 	c.App.Draw()
 }
 

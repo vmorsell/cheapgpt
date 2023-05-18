@@ -55,6 +55,7 @@ func main() {
 		input.SetText("")
 
 		msg := Message{
+			Time:    time.Now(),
 			From:    "user",
 			Content: content,
 		}
@@ -105,8 +106,4 @@ func chatName(client *gpt.Client, message string) (string, error) {
 
 func fmtChatName(name string) string {
 	return fmt.Sprintf("[#%s]", name)
-}
-
-func fmtChatMessage(user, message string) string {
-	return fmt.Sprintf("\n%s <%s> %s", time.Now().Format("15:04"), user, message)
 }
