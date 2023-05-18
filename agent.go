@@ -40,12 +40,6 @@ func NewAgent(client *gpt.Client, messages *[]Message, out chan Message, name, p
 	}
 }
 
-type AgentConfig struct {
-	SystemMessage string
-	Model         gpt.Model
-	Client        *gpt.Client
-}
-
 func (a *Agent) ListenAndReply() error {
 	for {
 		<-a.Trigger
