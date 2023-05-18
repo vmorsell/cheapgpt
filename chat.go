@@ -58,7 +58,11 @@ func (c *Chat) AcceptMessages() {
 				continue
 			}
 
-			a.Trigger <- struct{}{}
+			// Trigger the agent unless a trigger is already awaiting.
+			select {
+			case a.Trigger <- struct{}{}:
+			default:
+			}
 		}
 	}
 }
