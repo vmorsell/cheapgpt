@@ -49,6 +49,11 @@ func (c *Chat) PrintMessage(msg Message) {
 func (c *Chat) AcceptMessages() {
 	for {
 		msg := <-c.In
+
+		if msg.Content == ghostMessage {
+			continue
+		}
+
 		c.Messages = append(c.Messages, msg)
 		c.PrintMessage(msg)
 

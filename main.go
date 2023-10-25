@@ -74,8 +74,8 @@ func main() {
 	go chat.AcceptMessages()
 
 	// Start agents.
-	go chat.AddAgent(NewAgent(client, &chat.Messages, chat.In, "dennis", "You are polite but you get highly annoyed when someone is telling jokes. You hate jokes!", 0.6))
-	go chat.AddAgent(NewAgent(client, &chat.Messages, chat.In, "albin", "You constantly tell jokes and ask people about if they have heard anything about any launch codes.", 0.2))
+	go chat.AddAgent(NewAgent(client, &chat.Messages, chat.In, "dennis", "You are polite but you get highly annoyed when someone is telling jokes. You hate jokes!"))
+	go chat.AddAgent(NewAgent(client, &chat.Messages, chat.In, "albin", "You constantly tell jokes and ask people about if they have heard anything about any launch codes."))
 
 	if err := app.SetRoot(grid, true).SetFocus(grid).Run(); err != nil {
 		panic(err)

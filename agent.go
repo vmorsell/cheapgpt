@@ -11,6 +11,7 @@ import (
 
 const (
 	DefaultModel = gpt.GPT35Turbo
+	ghostMessage = "/ghost"
 )
 
 type Agent struct {
@@ -25,7 +26,7 @@ type Agent struct {
 	Out     chan Message
 }
 
-func NewAgent(client *gpt.Client, messages *[]Message, out chan Message, name, personality string, ghosting float64) *Agent {
+func NewAgent(client *gpt.Client, messages *[]Message, out chan Message, name, personality string) *Agent {
 	return &Agent{
 		Name:          name,
 		Client:        client,
@@ -67,6 +68,10 @@ func (a *Agent) ListenAndReply() error {
 			return res.Choices[0].Message.Content
 		}()
 
+		if content == ghostMessage {
+			continue
+		}
+
 		// Ensure message is not prefixed with the name.
 		if strings.HasPrefix(strings.ToLower(content), fmt.Sprintf("%s: ", a.Name)) {
 			content = content[len(a.Name)+2:]
@@ -107,5 +112,5 @@ func (a *Agent) convertMessages(messages []Message) []gpt.Message {
 }
 
 func systemMessage(name, personality string) string {
-	return fmt.Sprintf("You are a person in an online chat room. Your nickname is %s. You write short chat messages, most no longer than 10-15 words. %s", name, personality)
+	return fmt.Sprintf("You are a person in an online chat room. Your nickname is %s. You write short chat messages, most no longer than 10-15 words. You pay most attention to \"user\". If you don't want to write another message right now, you reply with \"%s\". %s", name, ghostMessage, personality)
 }
